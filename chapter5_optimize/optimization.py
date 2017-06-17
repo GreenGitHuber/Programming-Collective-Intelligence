@@ -68,7 +68,7 @@ def schedulecost(sol):
     return totalprice + totalwait
 
 #定义一个随机搜索算法
-def randomoptimize(domain, costf):#domain是一个由二元组构成的列表，costf是我们自己定义的成本函数
+ def randomoptimize(domain, costf):#domain是一个由二元组构成的列表，costf是我们自己定义的成本函数
     best = 999999999
     bestr = None
     for i in range(0, 1000):#会有1000个解决方案
@@ -115,5 +115,35 @@ def hillclimb(domain, costf):
         if best == current:
             break
     return sol
+#模拟退火算法
+def annealingoptimize(domain,costf,T=10000.0,cool=0.95,step=1):
+  # 随机初始化一个解
+  vec=[float(random.randint(domain[i][0],domain[i][1])) 
+       for i in range(len(domain))]
+  
+  while T>0.1:
+    # Choose one of the indices
+    i=random.randint(0,len(domain)-1)
 
+    # Choose a direction to change it
+    dir=random.randint(-step,step)
 
+    # Create a new list with one of the values changed
+    vecb=vec[:]
+    vecb[i]+=dir
+    if vecb[i]<domain[i][0]: vecb[i]=domain[i][0]
+    elif vecb[i]>domain[i][1]: vecb[i]=domain[i][1]
+
+    # Calculate the current cost and the new cost
+    ea=costf(vec)
+    eb=costf(vecb)
+    p=pow(math.e,(-eb-ea)/T)
+
+    # Is it better, or does it make the probability
+    # cutoff?
+    if (eb<ea or random.random()<p):
+      vec=vecb      
+
+    # Decrease the temperature
+    T=T*cool
+  return vec
