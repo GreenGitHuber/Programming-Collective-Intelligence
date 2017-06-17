@@ -80,7 +80,52 @@ def schedulecost(sol):
         cost = costf(r)
 
         # Compare it to the best one so far
-        if cost < best:
+#遗传算法
+def geneticoptimize(domain,costf,popsize = 50,step = 1,
+                    mutprob = 0.2,elite = 0.2,maxiter = 100):#popsize表示的是种群的大小，mutprob种群新成员是由变异得来的概率
+    #变异操作
+    def mutate(vec):
+        i = random.randint(0,len(domain) - 1)
+        if random.random()<0.5 and vec[i]>domain[i][0]:
+            return vec[0:i]+[vec[i]-step]+vec[i+1:]
+        elif vec[i] <domain[i][1]:
+            return vec[0:i]+[vec[i]+step]+vec[i+1:]
+    #定义交叉操作
+    def crossover(r1,r2):
+        i=random.randint(1,len(domain)-1)
+        return r1[0:i]+r2[i:]
+    #构造初始种群
+    pop=[]
+    for i in range(popsize):
+        vec = [random.randint(domain[i][0],domain[i][1])
+               for i in range(len(domain))]
+        pop.append(vec)
+
+    #每一代有多少胜出者
+    topelite=int(elite*popsize)
+
+    #主循环
+    for i in range(maxiter):
+        scores=[(costf(v),v) for v in pop]
+        scores.sort()
+        ranke=[v for (s,v) in scores]
+
+        #从胜出者开始
+        pop = ranke[0:topelite]
+        #添加变异或者配对后的胜出者
+        while len(pop)<popsize:
+            if random.random()<mutprob:
+                #变异
+                c = random.randint(0, topelite)
+                pop.append(mutate(ranke[c]))
+            else:
+                #交叉
+                c1=random.randint (0,topelite)
+                c2=random.randint(0,topelite)
+                pop.append(crossover(ranke[c1],ranke[c2]))
+        print scores[0][0]
+
+    return scores[0][1]        if cost < best:
             best = cost
             bestr = r
     return r
