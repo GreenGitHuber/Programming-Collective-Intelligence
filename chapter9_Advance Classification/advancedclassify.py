@@ -115,7 +115,7 @@ def rbf(v1,v2,gamma=10):
   l=sum(dv)
   return math.e**(-gamma*l)
 
-#定义一个非线性分类器
+#定义一个非线性分类器，采用了rbf
 def nlclassify(point, rows, offset, gamma=10):
     sum0 = 0.0
     sum1 = 0.0
